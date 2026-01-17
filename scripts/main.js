@@ -2010,79 +2010,98 @@ function init() {
     for (let i = 0; i < refining_resource_list.length; i++) {
         let row = document.createElement("tr");
 
+        // Cell 0: Tier
         let resource_tier = document.createElement("td");
         resource_tier.innerHTML = refining_resource_list[i].tier + "." + refining_resource_list[i].enchant;
         resource_tier.className = refining_product_list[i].item_value;
         row.appendChild(resource_tier);
 
+        // Cell 1: Resource Image
         let resource_image = document.createElement("td");
         let resource_image_element = document.createElement("img");
         resource_image_element.src = "images/resources/" + refining_resource_list[i].image;
         resource_image_element.style.width = "75px";
         resource_image_element.style.height = "75px";
         resource_image_element.alt = refining_resource_list[i].name + " " + refining_resource_list[i].tier + "." + refining_resource_list[i].enchant + " image";
-
         resource_image_element.onclick = function() {
             copySearchString(refining_resource_list[i].name);
         }
-
         resource_image.appendChild(resource_image_element);
         row.appendChild(resource_image);
 
+        // Cell 2: Resource Price Input
         let resource_price_input = document.createElement("td");
         let resource_price_input_element = document.createElement("input");
         resource_price_input_element.id = "resource-price-input-" + refining_resource_list[i].tier + "." + refining_resource_list[i].enchant;
         resource_price_input_element.type = "number";
         resource_price_input_element.value = 0;
-        resource_price_input_element.onclick = function () {
-            this.select();
-        }
-        resource_price_input_element.oninput = function () {
-            updateNumbers(this);
-        }
+        resource_price_input_element.onclick = function () { this.select(); }
+        resource_price_input_element.oninput = function () { updateNumbers(this); }
         resource_price_input.appendChild(resource_price_input_element);
         row.appendChild(resource_price_input);
 
+        // Cell 3: Buy Order Price Input
+        let resource_buy_input = document.createElement("td");
+        let resource_buy_element = document.createElement("input");
+        resource_buy_element.id = "resource-buy-input-" + refining_resource_list[i].tier + "." + refining_resource_list[i].enchant;
+        resource_buy_element.type = "number";
+        resource_buy_element.value = 0;
+        resource_buy_element.onclick = function () { this.select(); };
+        resource_buy_element.oninput = function () { updateNumbers(this); };
+        
+        // Add class for toggle
+        resource_buy_input.className = "buy-order-column";
+        
+        resource_buy_input.appendChild(resource_buy_element);
+        row.appendChild(resource_buy_input); 
+
+        // Cell 4: Buy Instant Until (NEW)
+        let max_buy_instant = document.createElement("td");
+        let max_buy_instant_element = document.createElement("p");
+        max_buy_instant_element.innerHTML = "0";
+        max_buy_instant.className = "buy-order-column"; // Add class for toggle
+        max_buy_instant.appendChild(max_buy_instant_element);
+        row.appendChild(max_buy_instant);
+
+        // Cell 5: Product Image
         let product_image = document.createElement("td");
         let product_image_element = document.createElement("img");
         product_image_element.src = "images/resources/" + refining_product_list[i].image;
         product_image_element.style.width = "75px";
         product_image_element.style.height = "75px";
         product_image_element.alt = refining_product_list[i].name + " " + refining_product_list[i].tier + "." + refining_product_list[i].enchant + " image";
-
         product_image_element.onclick = function () {
             copySearchString(refining_product_list[i].name);
         }
-
         product_image.appendChild(product_image_element);
         row.appendChild(product_image);
 
+        // Cell 6: Product Price
         let product_price = document.createElement("td");
         let product_price_element = document.createElement("input");
         product_price_element.id = "product-price-input-" + refining_product_list[i].tier + "." + refining_resource_list[i].enchant;
         product_price_element.type = "number";
         product_price_element.value = 0;
-        product_price_element.onclick = function () {
-            this.select();
-        }
-        product_price_element.oninput = function () {
-            updateNumbers(this);
-        }
+        product_price_element.onclick = function () { this.select(); }
+        product_price_element.oninput = function () { updateNumbers(this); }
         product_price.appendChild(product_price_element);
         row.appendChild(product_price);
 
+        // Cell 7: Profit
         let profit = document.createElement("td");
         let profit_element = document.createElement("p");
         profit_element.innerHTML = "0";
         profit.appendChild(profit_element);
         row.appendChild(profit);
 
+        // Cell 8: Profit %
         let profit_percentage = document.createElement("td");
         let profit_percentage_element = document.createElement("p");
         profit_percentage_element.innerHTML = "0%";
         profit_percentage.appendChild(profit_percentage_element);
         row.appendChild(profit_percentage);
 
+        // Cell 9: Focus Cost
         let focus_cost = document.createElement("td");
         let focus_cost_element = document.createElement("p");
         focus_cost_element.innerHTML = "0"
@@ -2091,6 +2110,7 @@ function init() {
         focus_cost.appendChild(focus_cost_element);
         row.appendChild(focus_cost);
 
+        // Cell 10: Focus Profit
         let focus_profit = document.createElement("td");
         let focus_profit_element = document.createElement("p");
         focus_profit_element.innerHTML = "0";
@@ -2098,6 +2118,7 @@ function init() {
         focus_profit.appendChild(focus_profit_element);
         row.appendChild(focus_profit);
 
+        // Cell 11: Profit/Focus
         let profit_per_focus = document.createElement("td");
         let profit_per_focus_element = document.createElement("p");
         profit_per_focus_element.innerHTML = "0";
@@ -2105,13 +2126,18 @@ function init() {
         profit_per_focus.appendChild(profit_per_focus_element);
         row.appendChild(profit_per_focus);
 
+        // Cell 12: Resource Cost
         let total_resource_cost = document.createElement("td");
         let total_resource_cost_element = document.createElement("p");
         total_resource_cost_element.innerHTML = "0";
-        total_resource_cost.id = "detail-column";
+        // removed id="detail-column" to make them standard columns, 
+        // or keep if you want them to be toggleable by a different switch later.
+        // For now leaving IDs but the switch will control the new class.
+        total_resource_cost.id = "detail-column"; 
         total_resource_cost.appendChild(total_resource_cost_element);
         row.appendChild(total_resource_cost);
 
+        // Cell 13: Usage Fee
         let station_tax_detail = document.createElement("td");
         let station_tax_detail_element = document.createElement("p");
         station_tax_detail_element.innerHTML = "0";
@@ -2119,6 +2145,7 @@ function init() {
         station_tax_detail.appendChild(station_tax_detail_element);
         row.appendChild(station_tax_detail);
 
+        // Cell 14: Market Tax
         let market_tax_detail = document.createElement("td");
         let market_tax_detail_element = document.createElement("p");
         market_tax_detail_element.innerHTML = "0";
@@ -2137,6 +2164,9 @@ function init() {
     updateMastery();
     updateNumbers();
     updateFocus();
+
+    // Trigger toggleColumns to set initial state of buy order columns based on checkbox
+    toggleColumns('detail');
 
     if(document.getElementById("table-settings-hide-rows").checked) {
         document.getElementById("table-settings-hide-rows").click();
@@ -2158,9 +2188,14 @@ function loadFromLocalStorage(type) {
             table.rows[i].cells[2].getElementsByTagName("input")[0].value = resource_price;
         }
         if(product_price != null) {
-            table.rows[i].cells[4].getElementsByTagName("input")[0].value = product_price;
+            // Product Price is now at index 6
+            table.rows[i].cells[6].getElementsByTagName("input")[0].value = product_price;
         }
-        
+        let buy_price = localStorage.getItem(refining_resource + "resource-buy-input-" + tier);
+        if (buy_price != null) {
+            // Resource Buy is at index 3
+            table.rows[i].cells[3].getElementsByTagName("input")[0].value = buy_price; 
+        }
         let enchant = tier.split(".")[1];
         let hideEnchant = localStorage.getItem("hide-enchant-"+enchant);
         if(hideEnchant != null && hideEnchant == "true") {
@@ -2227,7 +2262,7 @@ function updateNumbers(element) {
         validateInput(element);
         let element_id = element.id;
         if(element_id != null) {
-            if(element_id.includes("product-price-input-") || element_id.includes("resource-price-input-")) {
+            if(element_id.includes("product-price-input-") || element_id.includes("resource-price-input-") || element_id.includes("resource-buy-input-")) {
                 let elementValue = document.getElementById(element_id).value;
                 if(elementValue < 0 || elementValue == "") {
                     elementValue = 0;
@@ -2251,62 +2286,67 @@ function updateNumbers(element) {
     let table = document.getElementById("resouce-table-body");
     for (let i = 0; i < table.rows.length; i++) {
 
-        if(table.rows[i].cells[2].getElementsByTagName("input")[0].value == 0 || table.rows[i].cells[4].getElementsByTagName("input")[0].value == 0) {
-            table.rows[i].cells[5].children[0].innerHTML = "0";
-            table.rows[i].cells[6].children[0].innerHTML = "0%";
+        if(table.rows[i].cells[2].getElementsByTagName("input")[0].value == 0 || table.rows[i].cells[6].getElementsByTagName("input")[0].value == 0) {
+            table.rows[i].cells[7].children[0].innerHTML = "0";
+            table.rows[i].cells[8].children[0].innerHTML = "0%";
             continue;
         }
 
-        let resource_cost = getResourceCosts()[i];
+        // --- UPDATED CALCULATION & COLOR LOGIC ---
+        let resource_buy_val = parseFloat(table.rows[i].cells[3].getElementsByTagName("input")[0].value);
+        let max_buy_instant_val = resource_buy_val * 1.025;
+        
+        // Get Current Price (Cell 2)
+        let current_price_val = parseFloat(table.rows[i].cells[2].getElementsByTagName("input")[0].value);
 
-        let product_price = table.rows[i].cells[4].children[0].value;
+        let max_buy_instant_element = table.rows[i].cells[4].children[0];
+        max_buy_instant_element.innerHTML = max_buy_instant_val.toFixed(0);
+
+        // Color Logic: If Limit > Current Price, set Green.
+        if (max_buy_instant_val > current_price_val) {
+            max_buy_instant_element.style.color = "green";
+            max_buy_instant_element.style.fontWeight = "bold"; // Optional: Makes it pop more
+        } else {
+            max_buy_instant_element.style.color = ""; // Reset to default
+            max_buy_instant_element.style.fontWeight = "normal";
+        }
+        // -----------------------
+
+        let resource_cost = getResourceCosts()[i];
+        let product_price = table.rows[i].cells[6].children[0].value;
         let item_value = table.rows[i].cells[0].className;
         let tax_cost = ((item_value * 0.1125)*tax)/100;
-
         let tier = table.rows[i].cells[0].innerHTML;
         
-        if(table.rows[i].cells[0].innerHTML == "2.0") tax_cost = 0;
+        if(tier == "2.0") tax_cost = 0;
 
         let profit = (product_price - resource_cost + (resource_cost/100*return_rate) - tax_cost)*craft_amount;
-
-
         let market_tax = document.getElementById("refining-market-tax-percentage").value/100;
         let market_tax_cost = (product_price*market_tax)*craft_amount;
+        
         if(document.getElementById("refining-market-tax").checked) {
             profit = profit - market_tax_cost;
-        } else {
-            market_tax = 0;
         }
 
         if(document.getElementById("refine-from").checked) {
             if(tier[0] > document.getElementById("refine-from-dropdown").value) {
                 let offset = getOffset(tier);
-                let previous_profit = table.rows[i-offset].cells[5].children[0].innerHTML;
+                let previous_profit = table.rows[i-offset].cells[7].children[0].innerHTML;
                 profit = profit + parseFloat(previous_profit);
             }
         }
 
-        // let profit_percentage = (profit / (resource_cost*craft_amount)) * 100;
-        let profit_percentage = (profit / ((product_price*(1-market_tax))*craft_amount)) * 100;
+        let profit_percentage = (profit / ((product_price*(1-(document.getElementById("refining-market-tax").checked ? market_tax : 0)))*craft_amount)) * 100;
         
-        let label_prefix = "<a href='#' class='missing_resource_tooltip' style='color:red;text-decoration:none;' title='Missing price of previous tier product'>";
-        let label_suffix = " (!)</a>";
-        if(tier != "2.0") {
-            let value = table.rows[i-getOffset(tier)].cells[4].children[0].value;
-            if(value != 0) label_prefix = "", label_suffix = "";
-        } else {
-            label_prefix = "", label_suffix = "";
-        }
-
-        table.rows[i].cells[5].children[0].innerHTML = label_prefix + profit.toFixed(0) + label_suffix;
-        table.rows[i].cells[6].children[0].innerHTML = label_prefix + profit_percentage.toFixed(2) + "%" + label_suffix;
+        table.rows[i].cells[7].children[0].innerHTML = profit.toFixed(0);
+        table.rows[i].cells[8].children[0].innerHTML = profit_percentage.toFixed(2) + "%";
         
-        table.rows[i].cells[10].children[0].innerHTML = (resource_cost*craft_amount).toFixed(0);
-        table.rows[i].cells[11].children[0].innerHTML = (tax_cost*craft_amount).toFixed(0);
-        table.rows[i].cells[12].children[0].innerHTML = (market_tax_cost).toFixed(0);
+        table.rows[i].cells[12].children[0].innerHTML = (resource_cost*craft_amount).toFixed(0);
+        table.rows[i].cells[13].children[0].innerHTML = (tax_cost*craft_amount).toFixed(0);
+        table.rows[i].cells[14].children[0].innerHTML = (market_tax_cost).toFixed(0);
 
-        colorProfits(table.rows[i].cells[5].children[0]);
-        colorProfits(table.rows[i].cells[6].children[0]);
+        colorProfits(table.rows[i].cells[7].children[0]);
+        colorProfits(table.rows[i].cells[8].children[0]);
     }
     updateFocus();
 }
@@ -2344,69 +2384,55 @@ function updateMastery() {
 }
 
 function updateFocus() {
+    // ... [mastery calculation variables remain unchanged] ...
     let t4_mastery = parseInt(document.getElementById("refining-mastery-t4").value);
     let t5_mastery = parseInt(document.getElementById("refining-mastery-t5").value);
     let t6_mastery = parseInt(document.getElementById("refining-mastery-t6").value);
     let t7_mastery = parseInt(document.getElementById("refining-mastery-t7").value);
     let t8_mastery = parseInt(document.getElementById("refining-mastery-t8").value);
-
     let craft_amount = parseInt(document.getElementById("refining-station-amount").value);
 
     let table = document.getElementById("resouce-table-body");
     for (let i = 0; i < table.rows.length; i++) {
-
-        if(table.rows[i].cells[2].getElementsByTagName("input")[0].value == 0 || table.rows[i].cells[4].getElementsByTagName("input")[0].value == 0) continue;
+        // Check cells: Res Price (2) and Prod Price (6)
+        if(table.rows[i].cells[2].getElementsByTagName("input")[0].value == 0 || table.rows[i].cells[6].getElementsByTagName("input")[0].value == 0) continue;
         
         let tier = table.rows[i].cells[0].innerHTML;
-        let focus_efficiency = t4_mastery*30 + t5_mastery*30 + t6_mastery*30 + t7_mastery*30 + t8_mastery*30;
+        let focus_efficiency = (t4_mastery + t5_mastery + t6_mastery + t7_mastery + t8_mastery) * 30;
 
         switch (tier[0]) {
-            case "4":
-                focus_efficiency += t4_mastery*250;
-                break;
-            case "5":
-                focus_efficiency += t5_mastery*250;
-                break;
-            case "6":
-                focus_efficiency += t6_mastery*250;
-                break;
-            case "7":
-                focus_efficiency += t7_mastery*250;
-                break;
-            case "8":
-                focus_efficiency += t8_mastery*250;
-                break;
+            case "4": focus_efficiency += t4_mastery*250; break;
+            case "5": focus_efficiency += t5_mastery*250; break;
+            case "6": focus_efficiency += t6_mastery*250; break;
+            case "7": focus_efficiency += t7_mastery*250; break;
+            case "8": focus_efficiency += t8_mastery*250; break;
         }
 
-        let base_focus_cost = parseInt(table.rows[i].cells[7].children[0].id);
+        // Focus cost base value is at Cell 9
+        let base_focus_cost = parseInt(table.rows[i].cells[9].children[0].id);
         let focus_cost = (base_focus_cost*0.5**(focus_efficiency/10000))*craft_amount;
 
         let tax = document.getElementById("refining-station-tax").value;
-
-        let product_price = table.rows[i].cells[4].children[0].value;
+        let product_price = table.rows[i].cells[6].children[0].value; // Cell 6
         let item_value = table.rows[i].cells[0].className;
         let tax_cost = ((item_value * 0.1125)*tax)/100;
-
-        let return_rate = getReturnRate(true)
-
+        let return_rate = getReturnRate(true);
         let resource_cost = getResourceCosts()[i];
 
         let focus_profit = (product_price - resource_cost + (resource_cost/100*return_rate) - tax_cost)*craft_amount;
-        let market_tax = document.getElementById("refining-market-tax-percentage").value/100;
-        let market_tax_cost = (product_price*market_tax)*craft_amount;
-
         if(document.getElementById("refining-market-tax").checked) {
-            focus_profit = focus_profit - market_tax_cost;
+            focus_profit -= (product_price * (document.getElementById("refining-market-tax-percentage").value/100)) * craft_amount;
         }
 
         let profit_per_focus = focus_profit/focus_cost;
 
-        table.rows[i].cells[7].children[0].innerHTML = Math.ceil(focus_cost);
-        table.rows[i].cells[8].children[0].innerHTML = focus_profit.toFixed(0);
-        table.rows[i].cells[9].children[0].innerHTML = profit_per_focus.toFixed(0);
+        // Populate shifted cells: Focus Cost (9), Focus Profit (10), Profit/Focus (11)
+        table.rows[i].cells[9].children[0].innerHTML = Math.ceil(focus_cost);
+        table.rows[i].cells[10].children[0].innerHTML = focus_profit.toFixed(0);
+        table.rows[i].cells[11].children[0].innerHTML = profit_per_focus.toFixed(0);
 
-        colorProfits(table.rows[i].cells[8].children[0]);
-        colorProfits(table.rows[i].cells[9].children[0]);
+        colorProfits(table.rows[i].cells[10].children[0]);
+        colorProfits(table.rows[i].cells[11].children[0]);
     }
 }
 
@@ -2464,7 +2490,9 @@ function getResourceCosts() {
         const tier = table.rows[i].cells[0].innerHTML;
         let resource_price = +table.rows[i].cells[2].children[0].value;
         let offset = getOffset(tier);
-        let prevValue = i - offset >= 0 ? +table.rows[i - offset].cells[4].children[0].value : 0;
+        
+        // FIX: Product Price is at Cell 6
+        let prevValue = i - offset >= 0 ? +table.rows[i - offset].cells[6].children[0].value : 0;
         const multiplier = tierMultipliers[tier[0]];
 
         let tempcost = resource_price;
@@ -2514,22 +2542,36 @@ function getOffset(tier) {
     return offset;
 }
 
-function toggleColumns() {
-    let focus_switch = document.getElementById("profile-settings-focus-columns");
-    let detail_switch = document.getElementById("profile-settings-detail-columns");
+function toggleColumns(type) {
+    if (type === 'detail') {
+        // Toggle the Buy Order Columns
+        let buy_order_switch = document.getElementById("profile-settings-detail-columns");
+        let displayStyle = buy_order_switch.checked ? "table-cell" : "none";
 
-    let width = !focus_switch.checked ? "100%" : detail_switch.checked ? "75%" : "60%";
-    
-    let window_width = window.innerWidth;
-    if (window_width < 1050) {
-        width = "100%";
-    } else if (window_width < 1300) {
-        width = "90%";
+        let cols = document.getElementsByClassName("buy-order-column");
+        for(let i=0; i<cols.length; i++) {
+            cols[i].style.display = displayStyle;
+        }
+    } else {
+        // Toggle Focus Columns (existing logic)
+        let focus_switch = document.getElementById("profile-settings-focus-columns");
+        document.getElementById("refining-table").classList.toggle("focus-table", focus_switch.checked);
     }
 
-    document.getElementById("refining-table").classList.toggle("focus-table", focus_switch.checked);
-    document.getElementById("refining-table").classList.toggle("detail-table", !detail_switch.checked);
-
+    let detail_switch = document.getElementById("profile-settings-detail-columns");
+    let focus_switch = document.getElementById("profile-settings-focus-columns");
+    
+    // Width adjustment logic
+    let width = "100%"; // default for small screens
+    let window_width = window.innerWidth;
+    
+    if (window_width >= 1050) {
+        // Simple logic: if showing less, show wider? 
+        // Original logic was: !focus ? 100% : detail ? 75% : 60%
+        // We can adapt or leave it. The detail switch now toggles EXTRA columns, so if checked, table is WIDER.
+        width = !focus_switch.checked ? "100%" : detail_switch.checked ? "75%" : "60%";
+        if (window_width < 1300 && width == "60%") width = "90%";
+    }
     document.getElementById("refining-table").style.width = width;
 }
 
@@ -2597,26 +2639,32 @@ function pullPrices(resources) {
 
 function pullCurrentPrices(resources) {
     console.log("pullCurrentPrices", resources);
-    let offset = (resources ? 2 : 0);
+    // Offset for Pulling: If resources=true, target columns 2 & 3. If false, target column 6.
+    
+    // Previous logic: offset = (resources ? 2 : 0);
+    // targetCell = resources ? (4 - offset) : (4 - offset + productShift);
+    
+    // New logic: 
+    // Resource Price: Cell 2
+    // Resource Buy: Cell 3
+    // Product Price: Cell 6
 
     let table = document.getElementById("resouce-table-body");
-    for(let i = 0; i < table.rows.length; i++) {
-        table.rows[i].cells[4-offset].children[0].value = 0;
-    }
-
+    
     let flipped = document.getElementById("table-settings-flip-table").checked;
     if(flipped) {
         flipTable();
     }
 
     let element_id = resources ? "refining-city-resource" : "refining-city-product";
-
     let server = document.getElementById("server-select").value;
     let city = document.getElementById(element_id).value;
 
     let item_list = "";
+    // Image cells: Resource at 1, Product at 5
     for(let i = 0; i < table.rows.length; i++) {
-        let img_value = table.rows[i].cells[3-offset].innerHTML.split("/");
+        let imgCell = resources ? 1 : 5;
+        let img_value = table.rows[i].cells[imgCell].innerHTML.split("/");
         let item_id = img_value[img_value.length-1].split(".")[0];
 
         if(item_id[item_id.length-1] >= '0' && item_id[item_id.length-1] <= '9') {
@@ -2628,7 +2676,7 @@ function pullCurrentPrices(resources) {
     }
 
     let refining_resource = document.getElementById("refining-resource").value;
-    let valArr = [0,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6]
+    let valArr = [0,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6];
 
     let url = "https://"+server+".albion-online-data.com/api/v2/stats/prices/"+item_list+"?locations="+city+"&qualities=1";
     fetch(url)
@@ -2636,41 +2684,44 @@ function pullCurrentPrices(resources) {
     .then(data => {
         for(let i = 0; i < table.rows.length; i++) {
             let index = refining_resource == "4" && !resources ? valArr[i] : i;
-            let price;
+            
+            if (resources) {
+                // Resource Market Price (Cell 2)
+                let price_cell = table.rows[i].cells[2].children[0];
+                price_cell.value = (data[index]?.sell_price_min || 0);
+                if(data[index]) changeAgeIndicator(price_cell, data[index].sell_price_min_date);
 
-            if (data[index] && data[index].sell_price_min !== null) {
-                price = data[index].sell_price_min;
-            }
-
-            let price_cell = table.rows[i].cells[4-offset].children[0];
-            price_cell.value = (price || 0);
-           
-            if(data[index]) {
-                try {
-                    changeAgeIndicator(price_cell, data[index].sell_price_min_date);
-                } catch (error) {
-                    console.log(error);
-                }
+                // Resource Buy Order Price (Cell 3)
+                let buy_cell = table.rows[i].cells[3].children[0];
+                buy_cell.value = (data[index]?.buy_price_max || 0);
+                if(data[index]) changeAgeIndicator(buy_cell, data[index].buy_price_max_date);
+            } else {
+                // Product Market Price (Cell 6)
+                let product_cell = table.rows[i].cells[6].children[0];
+                product_cell.value = (data[index]?.sell_price_min || 0);
+                if(data[index]) changeAgeIndicator(product_cell, data[index].sell_price_min_date);
             }
         }
-    }
-    ).then(() => {
+    })
+    .then(() => {
         if(flipped) {
             flipTable();
         }
-    }
-    ).finally(() => {
+    })
+    .finally(() => {
         updateNumbers();
     });
 }
 
 function pullAveragePrices(resources) {
+    // Average price usually only pulls Sell Price (Market Price)
+    // Target Cell: Resource (2) or Product (6)
 
-    let offset = (resources ? 2 : 0);
+    let targetCell = resources ? 2 : 6;
 
     let table = document.getElementById("resouce-table-body");
     for(let i = 0; i < table.rows.length; i++) {
-        table.rows[i].cells[4-offset].children[0].value = 0;
+        table.rows[i].cells[targetCell].children[0].value = 0;
     }
 
     let flipped = document.getElementById("table-settings-flip-table").checked;
@@ -2685,15 +2736,16 @@ function pullAveragePrices(resources) {
     let time_period = document.getElementById("time-period-select").value;
 
     let item_list = "";
+    // Image cells: Resource at 1, Product at 5
     for(let i = 0; i < table.rows.length; i++) {
-        let img_value = table.rows[i].cells[3-offset].innerHTML.split("/");
+        let imgCell = resources ? 1 : 5; 
+        let img_value = table.rows[i].cells[imgCell].innerHTML.split("/");
         let item_id = img_value[img_value.length-1].split(".")[0];
-
+        // ... [ID parsing remains the same] ...
         if(item_id[item_id.length-1] >= '0' && item_id[item_id.length-1] <= '9') {
             let enchant = item_id[item_id.length-1];
             item_id = item_id.replace("_LEVEL"+enchant, "_LEVEL"+enchant+"@"+enchant);
         }
-
         item_list += item_id + ",";
     }
 
@@ -2708,7 +2760,8 @@ function pullAveragePrices(resources) {
             let index = refining_resource == "4" && !resources ? valArr[i] : i;
             let price;
 
-            if (data[index] && data[index].data && data[index].data.length > 0 && data[index].data[0].avg_price !== null) {
+            // ... [Average Price Calculation remains unchanged] ...
+             if (data[index] && data[index].data && data[index].data.length > 0 && data[index].data[0].avg_price !== null) {
                 data[index].data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
                 if (time_period <= 24) {
                     price = data[index].data[0].avg_price;
@@ -2726,8 +2779,7 @@ function pullAveragePrices(resources) {
                 }
             }
 
-            let price_cell = table.rows[i].cells[4-offset].children[0];
-
+            let price_cell = table.rows[i].cells[targetCell].children[0];
             price_cell.value = (price || 0);
         }
     }
@@ -2757,13 +2809,13 @@ function findResourceZCost() {
         let tax_cost = ((item_value * 0.1125)*station_tax)/100;
         let resources_needed = tierMultipliers[tier[0]];
 
-        let product_value = table.rows[i].cells[4].children[0].value;
+        let product_value = table.rows[i].cells[6].children[0].value;
         let previous_product = 0;
         if(tier == "2.0") {
             previous_product = 0;
             tax_cost = 0;
         } else {
-            previous_product = table.rows[i-getOffset(tier)].cells[4].children[0].value;
+            previous_product = table.rows[i-getOffset(tier)].cells[6].children[0].value;
         }
 
         if(tier != "2.0" && (product_value == 0 || previous_product == 0)) continue;
