@@ -180,6 +180,15 @@
                     </label>
                 </div>
                 <br>
+                
+                <div>
+                    <label class="text-label" for="profile-settings-profit-kg">Show Profit/Kg</label>
+                    <label class="switch">
+                        <input type="checkbox" id="profile-settings-profit-kg" onchange="toggleColumns('profit-kg');saveSettings(this);">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <br>
 
                 <div>
                     <label class="text-label" for="hide-enchants">Hide specific enchants</label>
@@ -304,7 +313,9 @@
                     <th>TIER</th>
                     <th>RESOURCE</th>
                     <th>PRICE</th>
-                    <th class="buy-order-column">BUY ORDER PRICE</th> <th class="buy-order-column">BUY INSTANT UNTIL</th> <th>PRODUCT</th>
+                    <th class="buy-order-column">BUY ORDER PRICE</th>
+                    <th class="buy-order-column">BUY INSTANT UNTIL</th>
+                    <th>PRODUCT</th>
                     <th>PRICE</th>
                     <th>PROFIT</th>
                     <th>PROFIT %</th>
@@ -314,6 +325,7 @@
                     <th id="detail-column">RESOURCE COST</th>
                     <th id="detail-column">USAGE FEE</th>
                     <th id="detail-column">MARKET TAX</th>
+                    <th class="profit-kg-column">PROFIT / KG</th>
                 </tr>
             </thead>
             <tbody id="resouce-table-body">

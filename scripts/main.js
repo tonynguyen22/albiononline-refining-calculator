@@ -1978,6 +1978,14 @@ const products = {
     ]
 }
 
+// Helper function to get weight based on Tier
+function getResourceWeight(tier) {
+    // Standard Albion Weight Formula: 0.1 * 1.5 ^ Tier
+    // Rounded to 2 decimals
+    let weight = 0.1 * Math.pow(1.5, tier);
+    return parseFloat(weight.toFixed(2));
+}
+
 function init() {
 
     document.getElementById("resouce-table-body").innerHTML = "";
@@ -2153,6 +2161,14 @@ function init() {
         market_tax_detail.appendChild(market_tax_detail_element);
         row.appendChild(market_tax_detail);
 
+        // Cell 15: Profit / Kg (NEW)
+        let profit_kg = document.createElement("td");
+        let profit_kg_element = document.createElement("p");
+        profit_kg_element.innerHTML = "0";
+        profit_kg.className = "profit-kg-column"; // Class for toggle
+        profit_kg.appendChild(profit_kg_element);
+        row.appendChild(profit_kg);
+
         document.getElementById("resouce-table-body").appendChild(row);
     }
 
@@ -2167,6 +2183,8 @@ function init() {
 
     // Trigger toggleColumns to set initial state of buy order columns based on checkbox
     toggleColumns('detail');
+    toggleColumns('profit-kg');
+    
 
     if(document.getElementById("table-settings-hide-rows").checked) {
         document.getElementById("table-settings-hide-rows").click();
@@ -2289,29 +2307,27 @@ function updateNumbers(element) {
         if(table.rows[i].cells[2].getElementsByTagName("input")[0].value == 0 || table.rows[i].cells[6].getElementsByTagName("input")[0].value == 0) {
             table.rows[i].cells[7].children[0].innerHTML = "0";
             table.rows[i].cells[8].children[0].innerHTML = "0%";
+            table.rows[i].cells[15].children[0].innerHTML = "0"; // Reset Profit/kg
             continue;
         }
 
-        // --- UPDATED CALCULATION & COLOR LOGIC ---
+        // Buy Order / Instant Buy Logic
         let resource_buy_val = parseFloat(table.rows[i].cells[3].getElementsByTagName("input")[0].value);
         let max_buy_instant_val = resource_buy_val * 1.025;
-        
-        // Get Current Price (Cell 2)
         let current_price_val = parseFloat(table.rows[i].cells[2].getElementsByTagName("input")[0].value);
 
         let max_buy_instant_element = table.rows[i].cells[4].children[0];
         max_buy_instant_element.innerHTML = max_buy_instant_val.toFixed(0);
 
-        // Color Logic: If Limit > Current Price, set Green.
         if (max_buy_instant_val > current_price_val) {
             max_buy_instant_element.style.color = "green";
-            max_buy_instant_element.style.fontWeight = "bold"; // Optional: Makes it pop more
+            max_buy_instant_element.style.fontWeight = "bold";
         } else {
-            max_buy_instant_element.style.color = ""; // Reset to default
+            max_buy_instant_element.style.color = ""; 
             max_buy_instant_element.style.fontWeight = "normal";
         }
-        // -----------------------
 
+        // Profit Calculations
         let resource_cost = getResourceCosts()[i];
         let product_price = table.rows[i].cells[6].children[0].value;
         let item_value = table.rows[i].cells[0].className;
@@ -2347,6 +2363,20 @@ function updateNumbers(element) {
 
         colorProfits(table.rows[i].cells[7].children[0]);
         colorProfits(table.rows[i].cells[8].children[0]);
+
+        // --- PROFIT PER KG CALCULATION ---
+        let tierVal = parseInt(tier[0]); // Extract Tier (e.g., "4" from "4.1")
+        let weight = getResourceWeight(tierVal);
+        let total_weight = weight * craft_amount; // Total weight of the batch
+        
+        let profit_kg = 0;
+        if(total_weight > 0) {
+            profit_kg = profit / total_weight;
+        }
+
+        // Cell 15 is Profit/Kg
+        table.rows[i].cells[15].children[0].innerHTML = profit_kg.toFixed(0);
+        colorProfits(table.rows[i].cells[15].children[0]);
     }
     updateFocus();
 }
@@ -2544,7 +2574,6 @@ function getOffset(tier) {
 
 function toggleColumns(type) {
     if (type === 'detail') {
-        // Toggle the Buy Order Columns
         let buy_order_switch = document.getElementById("profile-settings-detail-columns");
         let displayStyle = buy_order_switch.checked ? "table-cell" : "none";
 
@@ -2552,24 +2581,32 @@ function toggleColumns(type) {
         for(let i=0; i<cols.length; i++) {
             cols[i].style.display = displayStyle;
         }
-    } else {
+    } 
+    else if (type === 'profit-kg') {
+        let profit_kg_switch = document.getElementById("profile-settings-profit-kg");
+        let displayStyle = profit_kg_switch.checked ? "table-cell" : "none";
+        
+        let cols = document.getElementsByClassName("profit-kg-column");
+        for(let i=0; i<cols.length; i++) {
+            cols[i].style.display = displayStyle;
+        }
+    }
+    else {
         // Toggle Focus Columns (existing logic)
         let focus_switch = document.getElementById("profile-settings-focus-columns");
         document.getElementById("refining-table").classList.toggle("focus-table", focus_switch.checked);
     }
 
     let detail_switch = document.getElementById("profile-settings-detail-columns");
+    let profit_kg_switch = document.getElementById("profile-settings-profit-kg");
     let focus_switch = document.getElementById("profile-settings-focus-columns");
     
-    // Width adjustment logic
-    let width = "100%"; // default for small screens
+    // Adjust table width if necessary
+    let width = "100%"; 
     let window_width = window.innerWidth;
     
     if (window_width >= 1050) {
-        // Simple logic: if showing less, show wider? 
-        // Original logic was: !focus ? 100% : detail ? 75% : 60%
-        // We can adapt or leave it. The detail switch now toggles EXTRA columns, so if checked, table is WIDER.
-        width = !focus_switch.checked ? "100%" : detail_switch.checked ? "75%" : "60%";
+        width = !focus_switch.checked ? "100%" : (detail_switch.checked || profit_kg_switch.checked) ? "75%" : "60%";
         if (window_width < 1300 && width == "60%") width = "90%";
     }
     document.getElementById("refining-table").style.width = width;
